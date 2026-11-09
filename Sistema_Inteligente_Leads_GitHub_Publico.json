@@ -1,0 +1,916 @@
+{
+  "name": "Sistema Inteligente de Gestión de Leads - Proyecto Final",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "nuevo-lead",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "7e92dc8e-2d01-4e84-b3c3-6b046e00a94d",
+      "name": "Webhook"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "80049216-8485-4218-98c9-529fc05f01b0",
+              "leftValue": "={{ $json.body.email }}",
+              "rightValue": "@",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        224,
+        0
+      ],
+      "id": "c04a4ef0-508d-44d9-ac1d-b6e5dbbb5566",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "databasePage",
+        "operation": "getAll",
+        "dataSourceId": {
+          "__rl": true,
+          "value": "CONFIGURAR_ID_NOTION",
+          "mode": "list",
+          "cachedResultName": "Sistema Inteligente de Gestión de Leads"
+        },
+        "filterType": "manual",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "key": "Email|email",
+              "condition": "equals",
+              "richTextValue": "={{ $(\"Webhook\").first().json.body.email }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 3,
+      "position": [
+        448,
+        -96
+      ],
+      "id": "0c23dbdf-6c35-4297-a856-4d1fcba398e9",
+      "name": "Get many database pages",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "e20dca0b-9763-422c-9695-4e0abcfd2583",
+              "leftValue": "={{ $json.id ?? '' }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        672,
+        -96
+      ],
+      "id": "d31b3f96-c105-4f78-b7f5-69308d489371",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "databasePage",
+        "dataSourceId": {
+          "__rl": true,
+          "value": "CONFIGURAR_ID_NOTION",
+          "mode": "list",
+          "cachedResultName": "Leads"
+        },
+        "title": "={{ $(\"Webhook\").first().json.body.consulta }}",
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "Cliente|relation",
+              "relationValue": [
+                "={{ $json.cliente_id }}"
+              ]
+            },
+            {
+              "key": "Estado|status",
+              "statusValue": "Pendiente"
+            },
+            {
+              "key": "Fecha de ingreso|date",
+              "date": "={{ $now.toISO() }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 3,
+      "position": [
+        1456,
+        -192
+      ],
+      "id": "21f84798-4076-40f1-bc64-6a76aa10648a",
+      "name": "Create a database page1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3a73df55-b011-4e6c-a8f5-63787e0f167c",
+              "name": "cliente_id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        992,
+        -336
+      ],
+      "id": "7956ae66-1ecb-4a8d-befc-f4b993929347",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "df043389-245f-4742-bdb5-5370627ca22f",
+              "name": "cliente_id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        1120,
+        -16
+      ],
+      "id": "fbd240f2-f55a-4025-a33c-b8566bd2f66b",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "=Actúa como asistente comercial de una empresa de servicios para obras y construcción.\n\nAnaliza la consulta del cliente y realiza dos tareas:\n1. Clasifica su prioridad como ALTA, MEDIA o BAJA.\n2. Redacta una respuesta profesional, breve y personalizada en español argentino.\n\nCriterios de prioridad:\nALTA: urgencias explícitas, problemas graves o plazos inmediatos.\nMEDIA: solicitudes de presupuesto o consultas comerciales concretas.\nBAJA: preguntas generales sin urgencia.\n\nNo inventes precios, plazos ni disponibilidad. Si faltan datos, solicitá la información necesaria. No incluyas promesas comerciales no verificadas.\n\nDatos del cliente:\nNombre: {{ $('Webhook').first().json.body.nombre }}\nEmpresa: {{ $('Webhook').first().json.body.empresa }}\nTipo de cliente: {{ $('Webhook').first().json.body.tipo_cliente }}\nConsulta: {{ $('Webhook').first().json.body.consulta }}\n\nRespondé únicamente con un objeto JSON válido, sin markdown ni texto adicional, usando exactamente estas claves:\n{\"prioridad\":\"MEDIA\",\"respuesta\":\"Texto de respuesta al cliente\"}\n\nEl valor MEDIA del ejemplo es ilustrativo; elegí la prioridad según la consulta real."
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {
+          "maxTokens": 400,
+          "textFormat": {
+            "textOptions": {
+              "type": "json_object"
+            }
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.3,
+      "position": [
+        1680,
+        -192
+      ],
+      "id": "83e8f365-bcdb-4646-8620-3be1d5b9837c",
+      "name": "Message a model"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "databasePage",
+        "dataSourceId": {
+          "__rl": true,
+          "value": "CONFIGURAR_ID_NOTION",
+          "mode": "list",
+          "cachedResultName": "Sistema Inteligente de Gestión de Leads"
+        },
+        "title": "={{ $(\"Webhook\").first().json.body.nombre }}",
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "Email|email",
+              "emailValue": "={{ $(\"Webhook\").first().json.body.email }}"
+            },
+            {
+              "key": "Empresa|rich_text",
+              "textContent": "={{ $(\"Webhook\").first().json.body.empresa }}"
+            },
+            {
+              "key": "Estado|status",
+              "statusValue": "Pendiente"
+            },
+            {
+              "key": "Fecha de Registro|date",
+              "date": "={{ $now.toISO() }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 3,
+      "position": [
+        896,
+        -16
+      ],
+      "id": "5c4030ab-05d9-4512-bdde-209a477f04f2",
+      "name": "Create a database page"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "databasePage",
+        "operation": "update",
+        "pageId": {
+          "__rl": true,
+          "value": "={{ $(\"Create a database page1\").first().json.id }}",
+          "mode": "id"
+        },
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "Prioridad|select",
+              "selectValue": "={{ $json.output[0].content[0].text.prioridad }}"
+            },
+            {
+              "key": "Respuesta IA|rich_text",
+              "textContent": "={{ $json.output[0].content[0].text.respuesta }}"
+            },
+            {
+              "key": "Estado|status",
+              "statusValue": "Pendiente de aprobación"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 3,
+      "position": [
+        1949.1850501367367,
+        -192
+      ],
+      "id": "b4872c08-5e11-4962-aab6-a9bb33ed9064",
+      "name": "Update a database page"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "6bc2b37f-2e89-4436-b3b9-7dbeb8226a9c",
+              "leftValue": "={{ $json.property_aprobacion_humana ?? \"\" }}",
+              "rightValue": "Aprobado",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        3184,
+        -624
+      ],
+      "id": "8241a179-1e89-4869-b5fc-89766c4b2783",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        3968,
+        -272
+      ],
+      "id": "c2262f13-40f1-4c64-9b82-c7896e50933f",
+      "name": "Wait"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "databasePage",
+        "operation": "get",
+        "pageId": {
+          "__rl": true,
+          "value": "={{ $(\"Create a database page1\").first().json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 3,
+      "position": [
+        3536,
+        -112
+      ],
+      "id": "a2327aaa-6053-4bc9-bf12-c674992e4fba",
+      "name": "Get a database page"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "8503a5c0-dcb6-44bc-8ee3-d2da943a78a9",
+              "leftValue": "={{ $json.property_aprobacion_humana ?? \"\" }}",
+              "rightValue": "Aprobado",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        3520,
+        -96
+      ],
+      "id": "1ed53c19-48e8-4b72-ac7e-681a3316b5b5",
+      "name": "If3"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "223d8d1e-1958-4a61-9b1b-7773c1d09e69",
+              "leftValue": "={{ $json.property_aprobacion_humana ?? \"\" }}",
+              "rightValue": "Rechazado",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        3744,
+        0
+      ],
+      "id": "0944420c-2902-4ffb-957c-a935da57972b",
+      "name": "If4"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "128942da-394d-4dfe-b537-63ce949ac21d",
+              "name": "intentos",
+              "value": "={{ ($json.intentos ?? 0) + 1 }}",
+              "type": "number"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        3968,
+        -96
+      ],
+      "id": "c9d75878-9c4f-44e7-b018-dd6e12f834c5",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "768dbba8-981a-49a9-a874-4fae619e757b",
+              "leftValue": "={{ $json.intentos }}",
+              "rightValue": 12,
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        4192,
+        -96
+      ],
+      "id": "8002402e-4c9b-4ce3-bd3c-f8978b81c003",
+      "name": "If5"
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "sendTo": "APROBADOR@EJEMPLO.COM",
+        "subject": "Solicitud de aprobación – Sistema Inteligente de Gestión de Leads",
+        "message": "=SOLICITUD DE APROBACIÓN\nSistema Inteligente de Gestión de Leads\n\nCliente: {{ $(\"Webhook\").first().json.body.nombre }}\nEmpresa: {{ $(\"Webhook\").first().json.body.empresa }}\nConsulta: {{ $(\"Webhook\").first().json.body.consulta }}\n\nPrioridad: {{ $(\"Update a database page\").first().json.property_prioridad }}\n\nRESPUESTA GENERADA POR IA:\n{{ $(\"Update a database page\").first().json.property_respuesta_ia }}\n\nRevisá la respuesta y seleccioná Aprobar o Rechazar antes de enviarla al cliente.",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2176,
+        -192
+      ],
+      "id": "cbe45cea-a0c2-42ef-805f-5c612c713c8f",
+      "name": "Send message and wait for response"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "f9161fe7-cf88-4264-af3b-83dc267aef5c",
+              "leftValue": "={{ $json.data.approved }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        2384,
+        -192
+      ],
+      "id": "97312e21-736d-4f37-a3db-aa231eff3e35",
+      "name": "If6"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $(\"Webhook\").first().json.body.email }}",
+        "subject": "Respuesta a tu consulta – Prueba IA",
+        "message": "={{ $(\"Update a database page\").first().json.property_respuesta_ia }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2832,
+        -240
+      ],
+      "id": "7d8afc7d-bea5-417c-b312-b9b6bdd0618a",
+      "name": "Send a message"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "databasePage",
+        "operation": "update",
+        "pageId": {
+          "__rl": true,
+          "value": "={{ $(\"Create a database page1\").first().json.id }}",
+          "mode": "id"
+        },
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "Estado|status",
+              "statusValue": "Aprobado"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 3,
+      "position": [
+        2608,
+        -224
+      ],
+      "id": "f5dbafbf-e2a2-4846-b786-c49d8e769834",
+      "name": "Update a database page1"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "databasePage",
+        "operation": "update",
+        "pageId": {
+          "__rl": true,
+          "value": "={{ $(\"Create a database page1\").first().json.id }}",
+          "mode": "id"
+        },
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "Estado|status",
+              "statusValue": "Enviado"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 3,
+      "position": [
+        3056,
+        -176
+      ],
+      "id": "9b7a90eb-5dd0-48c6-9439-0c5b4f58c5b4",
+      "name": "Update a database page2"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "databasePage",
+        "operation": "update",
+        "pageId": {
+          "__rl": true,
+          "value": "={{ $(\"Create a database page1\").first().json.id }}",
+          "mode": "id"
+        },
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "Estado|status",
+              "statusValue": "Rechazado"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 3,
+      "position": [
+        2608,
+        -96
+      ],
+      "id": "ae42ba7e-a4df-4734-827d-ea35fbee8edd",
+      "name": "Update a database page3"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Get many database pages",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Get many database pages": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create a database page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Create a database page1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Create a database page1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a database page1": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a database page": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Update a database page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a database page": {
+      "main": [
+        [
+          {
+            "node": "Send message and wait for response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Get a database page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a database page": {
+      "main": [
+        [
+          {
+            "node": "If3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If3": {
+      "main": [
+        [],
+        [
+          {
+            "node": "If4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If4": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "If5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send message and wait for response": {
+      "main": [
+        [
+          {
+            "node": "If6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If6": {
+      "main": [
+        [
+          {
+            "node": "Update a database page1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update a database page3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Update a database page2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a database page1": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "c278e770-e1cb-465e-913c-035d6ed68b98",
+  "meta": {},
+  "nodeGroups": [],
+  "id": "SkAJu3nCUB0U7oK9",
+  "tags": []
+}
