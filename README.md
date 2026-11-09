@@ -54,9 +54,9 @@ No compartir claves API, tokens, credenciales, cabeceras del webhook ni datos re
 - `video_demo`: enlace al video de hasta 3 minutos (incorporar enlace una vez grabado).
 
 ## 11. Enlaces para completar
-- Repositorio GitHub: **[agregar enlace]**
+- Repositorio GitHub: **[https://github.com/FedeRinaudo95/Sistema-Inteligente-Gestion-de-Leads]**
 - Base Notion, acceso de solo lectura: **[https://young-carnation-60e.notion.site/3f74757243ab801d8e7fd689ffe3c8b0?v=3f74757243ab80c4923a000c30c2c5a6]**
-- Video demostrativo: **[agregar enlace]**
+- Video demostrativo: **[https://drive.google.com/file/d/1Ef0lK3Z0QBDXpb1o9k35nYijk2EqM9nM/view?usp=sharing]**
 
 ## 12. Conclusión
 El prototipo evidencia la integración de cuatro servicios, el enriquecimiento comercial con IA y un punto de revisión humana. Quedan pendientes la validación integral de las ramas y el endurecimiento del manejo de errores antes de su uso productivo.
