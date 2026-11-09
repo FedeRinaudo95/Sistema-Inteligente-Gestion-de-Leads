@@ -55,7 +55,7 @@ No compartir claves API, tokens, credenciales, cabeceras del webhook ni datos re
 
 ## 11. Enlaces para completar
 - Repositorio GitHub: **[agregar enlace]**
-- Base Notion, acceso de solo lectura: **[agregar enlace]**
+- Base Notion, acceso de solo lectura: **[https://young-carnation-60e.notion.site/3f74757243ab801d8e7fd689ffe3c8b0?v=3f74757243ab80c4923a000c30c2c5a6]**
 - Video demostrativo: **[agregar enlace]**
 
 ## 12. Conclusión
